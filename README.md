@@ -1,50 +1,91 @@
-# Welcome to your Expo app 👋
+# 🥗 Planned-Eat Web
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Modern, responsive, and animated landing page for the **Planned-Eat** mobile application. Developed as a university graduation project.
 
-## Get started
+![Project Preview](./assets/images/project-preview.png)
 
-1. Install dependencies
+## 🚀 About The Project
 
-   ```bash
-   npm install
-   ```
+This project is a single-page application (SPA) landing page designed to showcase the features, screenshots, and the development team of the Planned-Eat app. Built with React Native Web technology, it offers a near-native experience on both web browsers and mobile devices.
 
-2. Start the app
+### ✨ Key Features
 
-   ```bash
-   npx expo start
-   ```
+- **Modern UI/UX**: Fixed header with Glassmorphism effect, clean design, and spacious layout.
+- **Micro-Interactions**: Hover effects, button animations, and interactive cards.
+- **Scroll Reveal**: Sections fade in and slide up as you scroll down the page.
+- **Responsive Design**: Flexible structure compatible with desktop, tablet, and mobile.
+- **Dynamic Content**: Content structure managed from a single data file (`constants/data.ts`).
 
-In the output, you'll find options to open the app in a
+## 🛠️ Technologies
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- **Core**: [React Native](https://reactnative.dev/), [React Native Web](https://necolas.github.io/react-native-web/)
+- **Framework**: [Expo](https://expo.dev/), [Expo Router](https://docs.expo.dev/router/introduction/)
+- **Animation**: [React Native Reanimated](https://docs.swmansion.com/react-native-reanimated/)
+- **Styling**: StyleSheet API (CSS-in-JS)
+- **Language**: TypeScript
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## 📂 Project Structure
 
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+Planned-Eat-Web/
+├── app/                    # Page and Route structures
+│   ├── index.tsx           # Main Landing Page
+│   └── _layout.tsx         # Root Layout
+├── components/
+│   └── landing/            # Landing page components
+│       ├── HeroSection.tsx
+│       ├── FeaturesSection.tsx
+│       ├── MediaGallerySection.tsx
+│       ├── TeamSection.tsx
+│       ├── Header.tsx      # Sticky Glassmorphism Header
+│       └── ...
+├── constants/
+│   ├── data.ts             # All text, image, and link data
+│   └── theme.ts            # Color palette and theme settings
+└── ...
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## 🏁 Installation and Setup
 
-## Learn more
+Follow these steps to run the project locally:
 
-To learn more about developing your project with Expo, look at the following resources:
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/username/planned-eat-web.git
+    cd planned-eat-web
+    ```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
 
-## Join the community
+3.  **Start the web server:**
+    ```bash
+    npm run web
+    ```
+    Open `http://localhost:8081` in your browser.
 
-Join our community of developers creating universal apps.
+## 📝 Content Editing
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+You don't need to change the code to update texts, images, or team members on the site. Simply edit the `constants/data.ts` file.
+
+```typescript
+// Example: constants/data.ts
+export const heroContent = {
+  title: "Change Title Here",
+  // ...
+};
+```
+
+## 👥 Development Team
+
+This project was developed by the following team as part of a graduation thesis:
+
+- **[Name Surname]** - Full Stack Developer
+- **[Name Surname]** - Mobile Developer
+- **[Name Surname]** - UI/UX Designer
+
+## 📄 License
+
+This project is licensed under the MIT License.

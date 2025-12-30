@@ -31,13 +31,23 @@ yarn-error.*
 *.pem
 
 # local env files
-.env*.local
-
-# typescript
-*.tsbuildinfo
-
-app-example
-
-# generated native folders
 /ios
 /android
+
+# local env files
+.env
+.env*.local
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# testing
+coverage/
+.nyc_output/
+
+# editor specific
+.vscode/
+.idea/
