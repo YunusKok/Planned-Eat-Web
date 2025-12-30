@@ -1,20 +1,25 @@
 # 🥗 Planned-Eat Web
 
-Modern, responsive, and animated landing page for the **Planned-Eat** mobile application. Developed as a university graduation project.
+Modern, responsive, and animated landing page for the **Planned-Eat** mobile application. developed as a university graduation project.
+
+This project serves as the official web presence for Planned-Eat, an AI-powered meal planning and nutrition assistant.
 
 ![Project Preview](./assets/images/project-preview.png)
 
 ## 🚀 About The Project
 
-This project is a single-page application (SPA) landing page designed to showcase the features, screenshots, and the development team of the Planned-Eat app. Built with React Native Web technology, it offers a near-native experience on both web browsers and mobile devices.
+**Planned-Eat Web** is a high-performance single-page application (SPA) built to showcase the innovative features of the Planned-Eat ecosystem. 
+
+Designed with **React Native Web**, it delivers a seamless, native-like experience across all devices—from desktop browsers to mobile screens. The landing page features a cutting-edge **Glassmorphism design**, dynamic **scroll animations** powered by Reanimated, and a vibrant **Green-themed** aesthetic that reflects the app's focus on health and vitality.
 
 ### ✨ Key Features
 
-- **Modern UI/UX**: Fixed header with Glassmorphism effect, clean design, and spacious layout.
-- **Micro-Interactions**: Hover effects, button animations, and interactive cards.
-- **Scroll Reveal**: Sections fade in and slide up as you scroll down the page.
-- **Responsive Design**: Flexible structure compatible with desktop, tablet, and mobile.
-- **Dynamic Content**: Content structure managed from a single data file (`constants/data.ts`).
+- **Dynamic Morphing Header**: A unique header that transforms from a transparent bar to a floating, interactive pill with bubble details upon scrolling.
+- **Glassmorphism & Glow Effects**: Modern UI trends including background blurs, deep charcoal themes, and vibrant accent glows (Priot.io inspired).
+- **Interactive Cards**: Feature and Team cards with smooth, physics-based hover animations.
+- **Responsive Layout**: A "Write Once, Run Everywhere" codebase that adapts perfectly to any screen size.
+- **Scroll Reveal**: Sections animate elegantly into view using a custom Intersection Observer implementation.
+- **Dynamic Content**: Fully data-driven content manageability via `constants/data.ts`.
 
 ## 🛠️ Technologies
 

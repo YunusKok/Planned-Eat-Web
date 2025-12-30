@@ -204,7 +204,12 @@ export function HeroSection({ scrollY }: HeroSectionProps) {
         {/* Hero Image/Video */}
         {/* Moved phoneStyle from here to the View inside */}
         <View style={[styles.mediaContainer, isDesktop && styles.mediaContainerDesktop]}>
-          <Animated.View style={[styles.phoneFrame, { backgroundColor: colors.cardBg, borderColor: colors.border }, phoneStyle]}>
+          <Animated.View style={[styles.phoneFrame, { backgroundColor: '#000000', borderColor: '#121212' }, phoneStyle]}>
+            {/* iPhone Notch / Dynamic Island */}
+            <View style={styles.notch}>
+              <View style={styles.notchCamera} />
+            </View>
+
             {heroContent.heroMediaType === 'video' ? (
               <View style={styles.videoContainer}>
                 {Platform.OS === 'web' ? (
@@ -214,7 +219,7 @@ export function HeroSection({ scrollY }: HeroSectionProps) {
                       width: '100%',
                       height: '100%',
                       border: 'none',
-                      borderRadius: 24,
+                      borderRadius: 32, // Match frame interior
                     }}
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"
                     allowFullScreen
@@ -227,9 +232,9 @@ export function HeroSection({ scrollY }: HeroSectionProps) {
               </View>
             ) : (
               <Image
-                source={{ uri: heroContent.heroImageUrl }}
+                source={typeof heroContent.heroImageUrl === 'string' ? { uri: heroContent.heroImageUrl } : heroContent.heroImageUrl}
                 style={styles.heroImage}
-                contentFit="cover"
+                contentFit="fill" // Ensure full coverage
               />
             )}
           </Animated.View>
@@ -328,30 +333,52 @@ const styles = StyleSheet.create({
     maxWidth: 400,
   },
   phoneFrame: {
-    borderRadius: 40,
-    borderWidth: 8,
-    padding: 8,
+    borderRadius: 50, // Higher radius for modern iphone
+    borderWidth: 12, // Thicker bezel
+    padding: 0, // No padding, screen goes to edge
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 25 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.3,
     shadowRadius: 50,
     elevation: 25,
-    width: 280,
-    height: 580,
+    width: 300,
+    height: 600,
     overflow: 'hidden',
+    position: 'relative', // Context for notch
+  },
+  notch: {
+    position: 'absolute',
+    top: 0, // Attached to top bezel
+    alignSelf: 'center',
+    width: 120, // Wider for classic notary
+    height: 24,
+    backgroundColor: '#000',
+    borderBottomLeftRadius: 12,
+    borderBottomRightRadius: 12,
+    zIndex: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  notchCamera: {
+    width: 80,
+    height: 80, // Simulation reflection?
+    // Actually simpler: just the black pill is usually enough.
   },
   videoContainer: {
     flex: 1,
-    borderRadius: 32,
+    borderRadius: 38, // Match frame
     overflow: 'hidden',
+    backgroundColor: '#000', // Fill gaps
   },
   heroImage: {
     flex: 1,
-    borderRadius: 32,
+    borderRadius: 38, // Match frame interior
+    width: '100%',
+    height: '100%',
   },
   placeholder: {
     flex: 1,
-    borderRadius: 32,
+    borderRadius: 38,
     alignItems: 'center',
     justifyContent: 'center',
   },

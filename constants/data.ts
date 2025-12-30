@@ -14,7 +14,7 @@ export const heroContent = {
   // Promotion video or image for the app
   heroMediaType: "image" as "video" | "image",
   heroVideoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-  heroImageUrl: "https://images.unsplash.com/photo-1490818387583-1baba5e638af?w=800&q=80",
+  heroImageUrl: require('@/assets/images/hero-app-screen.png'),
 };
 
 // Features
