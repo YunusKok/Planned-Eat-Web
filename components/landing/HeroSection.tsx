@@ -156,7 +156,7 @@ export function HeroSection({ scrollY }: HeroSectionProps) {
         styles.hero,
         {
           backgroundColor: 'transparent',
-          paddingTop: 100, // Account for fixed header
+          paddingTop: isDesktop ? 120 : 140, // Increased for mobile to prevent header overlap
         },
       ]}
     >
@@ -285,7 +285,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
     marginBottom: 24,
-    overflow: 'hidden',
     alignSelf: 'center',
   },
   title: {
