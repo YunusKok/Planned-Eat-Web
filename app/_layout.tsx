@@ -24,9 +24,16 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
-  if (!loaded) {
-    return null;
-  }
+  // Fallback: Force hide splash screen after 2 seconds to prevent hanging
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      SplashScreen.hideAsync();
+    }, 2000);
+    return () => clearTimeout(timeout);
+  }, []);
+
+  // Removed blocking check to allow app to render even if fonts fail
+  // if (!loaded) return null;
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
