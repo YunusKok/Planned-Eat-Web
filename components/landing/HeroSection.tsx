@@ -13,8 +13,7 @@ import Animated, {
   withDelay,
   withRepeat,
   withSequence,
-  withSpring,
-  withTiming,
+  withTiming
 } from 'react-native-reanimated';
 import { StoreButton } from './StoreButton';
 
@@ -50,22 +49,22 @@ export function HeroSection({ scrollY }: HeroSectionProps) {
 
   useEffect(() => {
     // ... existing entry animations ...
-    badgeOpacity.value = withDelay(100, withTiming(1, { duration: 600 }));
-    badgeTranslateY.value = withDelay(100, withSpring(0, { damping: 15 }));
+    badgeOpacity.value = withDelay(100, withTiming(1, { duration: 800 }));
+    badgeTranslateY.value = withDelay(100, withTiming(0, { duration: 800 }));
 
-    titleOpacity.value = withDelay(200, withTiming(1, { duration: 600 }));
-    titleTranslateY.value = withDelay(200, withSpring(0, { damping: 15 }));
+    titleOpacity.value = withDelay(200, withTiming(1, { duration: 800 }));
+    titleTranslateY.value = withDelay(200, withTiming(0, { duration: 800 }));
 
-    subtitleOpacity.value = withDelay(400, withTiming(1, { duration: 600 }));
+    subtitleOpacity.value = withDelay(400, withTiming(1, { duration: 800 }));
 
-    buttonsOpacity.value = withDelay(600, withTiming(1, { duration: 600 }));
-    buttonsTranslateY.value = withDelay(600, withSpring(0, { damping: 15 }));
+    buttonsOpacity.value = withDelay(600, withTiming(1, { duration: 800 }));
+    buttonsTranslateY.value = withDelay(600, withTiming(0, { duration: 800 }));
 
-    statsOpacity.value = withDelay(800, withTiming(1, { duration: 600 }));
+    statsOpacity.value = withDelay(800, withTiming(1, { duration: 800 }));
 
-    phoneOpacity.value = withDelay(300, withTiming(1, { duration: 800 }));
-    phoneScale.value = withDelay(300, withSpring(1, { damping: 12, stiffness: 100 }));
-    phoneRotate.value = withDelay(300, withSpring(0, { damping: 12, stiffness: 100 }));
+    phoneOpacity.value = withDelay(300, withTiming(1, { duration: 1000 }));
+    phoneScale.value = withDelay(300, withTiming(1, { duration: 1000 }));
+    phoneRotate.value = withDelay(300, withTiming(0, { duration: 1000 }));
 
     // Continuous breathing animation for decor circles
     decor1Scale.value = withRepeat(
@@ -169,7 +168,7 @@ export function HeroSection({ scrollY }: HeroSectionProps) {
             🚀 Next Generation Nutrition App
           </Animated.Text>
           
-          <Animated.Text style={[styles.title, { color: colors.text }, titleStyle]}>
+          <Animated.Text style={[styles.title, { color: colors.text, fontSize: isDesktop ? 52 : 36, lineHeight: isDesktop ? 62 : 44 }, titleStyle]}>
             {heroContent.title}
           </Animated.Text>
           
@@ -188,17 +187,17 @@ export function HeroSection({ scrollY }: HeroSectionProps) {
               <Text style={[styles.statNumber, { color: colors.primary }]}>10K+</Text>
               <Text style={[styles.statLabel, { color: colors.muted }]}>Users</Text>
             </View>
-            <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
+            {isDesktop && <View style={[styles.statDivider, { backgroundColor: colors.border, display: 'flex' }]} />}
             <View style={styles.statItem}>
               <Text style={[styles.statNumber, { color: colors.primary }]}>360K+</Text>
               <Text style={[styles.statLabel, { color: colors.muted, textAlign: 'center' }]}>Spoonacular Recipes</Text>
             </View>
-            <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
+            {isDesktop && <View style={[styles.statDivider, { backgroundColor: colors.border, display: 'flex' }]} />}
             <View style={styles.statItem}>
               <Text style={[styles.statNumber, { color: colors.primary }]}>Unlimited</Text>
               <Text style={[styles.statLabel, { color: colors.muted, textAlign: 'center' }]}>AI Recipes</Text>
             </View>
-            <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
+            {isDesktop && <View style={[styles.statDivider, { backgroundColor: colors.border, display: 'flex' }]} />}
             <View style={styles.statItem}>
               <Text style={[styles.statNumber, { color: colors.primary }]}>4.9</Text>
               <Text style={[styles.statLabel, { color: colors.muted }]}>Rating</Text>
@@ -313,10 +312,14 @@ const styles = StyleSheet.create({
   stats: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: 24,
+    flexWrap: 'wrap', // Allow wrapping on mobile
+    width: '100%',
   },
   statItem: {
     alignItems: 'center',
+    minWidth: 80, // Ensure touch target/readability
   },
   statNumber: {
     fontSize: 32,
@@ -329,6 +332,7 @@ const styles = StyleSheet.create({
   statDivider: {
     width: 1,
     height: 40,
+    display: 'none', // Hide by default (mobile first approach for simple toggling, or handle in component)
   },
   mediaContainer: {
     flex: 1,

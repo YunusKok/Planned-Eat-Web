@@ -3,7 +3,7 @@ import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Ionicons } from '@expo/vector-icons';
 import { Image as ExpoImage } from 'expo-image';
-import React from 'react';
+import React, { useState } from 'react';
 import { Platform, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import Animated, {
   Extrapolation,
@@ -11,6 +11,7 @@ import Animated, {
   interpolate,
   interpolateColor,
   useAnimatedStyle,
+  useDerivedValue,
   useSharedValue,
   withTiming
 } from 'react-native-reanimated';
@@ -18,6 +19,13 @@ import Animated, {
 interface HeaderProps {
   scrollY?: SharedValue<number>;
 }
+
+const NAV_ITEMS = [
+  { label: 'Home', id: 'hero', icon: 'star-outline', activeIcon: 'star' },
+  { label: 'Features', id: 'features', icon: 'flash-outline', activeIcon: 'flash' },
+  { label: 'Discover', id: 'media', icon: 'compass-outline', activeIcon: 'compass' },
+  { label: 'Team', id: 'team', icon: 'people-outline', activeIcon: 'people' },
+];
 
 export function Header({ scrollY }: HeaderProps) {
   const colorScheme = useColorScheme() ?? 'light';
@@ -27,246 +35,192 @@ export function Header({ scrollY }: HeaderProps) {
   
   const localScrollY = useSharedValue(0);
   const activeScrollY = scrollY ?? localScrollY;
+  const [activeTab, setActiveTab] = useState('hero');
 
   const scrollToSection = (sectionId: string) => {
+    setActiveTab(sectionId);
     if (Platform.OS === 'web') {
       const element = document.getElementById(sectionId);
       element?.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
-  const navItems = [
-    { label: 'Features', id: 'features' },
-    { label: 'Discover', id: 'media' },
-    { label: 'Team', id: 'team' },
-  ];
-
-  const animatedContainerStyle = useAnimatedStyle(() => {
+  // Header background animation
+  const animatedHeaderStyle = useAnimatedStyle(() => {
     const scrollValue = activeScrollY.value;
+    const translateY = interpolate(scrollValue, [0, 100], [0, 24], Extrapolation.CLAMP);
     
-    // Width interpolation: 100% (Top) to Compact Pill (Scrolled)
-    const widthPercentage = interpolate(scrollValue, [0, 100], [100, isDesktop ? 60 : 80], Extrapolation.CLAMP);
-    
-    // Border Radius: 0 to 100
-    const borderRadius = interpolate(scrollValue, [0, 100], [0, 100], Extrapolation.CLAMP);
-    
-    // Background Color: Transparent -> Light Green (#86EFAC)
-    const backgroundColor = interpolateColor(
-      scrollValue,
-      [0, 100],
-      ['rgba(23, 23, 23, 0)', '#86EFAC'] // Green-300
-    );
-
-    const borderColor = interpolateColor(
-        scrollValue,
-        [0, 100],
-        ['transparent', 'rgba(255,255,255,0.4)']
-    );
-
-    return {
-      width: `${widthPercentage}%`,
-      borderRadius,
-      backgroundColor,
-      borderColor,
-      borderWidth: 1,
-      // Strong Glow Effect when Green
-      shadowColor: '#86EFAC',
-      shadowOpacity: interpolate(scrollValue, [0, 100], [0, 0.6], Extrapolation.CLAMP),
-      shadowRadius: interpolate(scrollValue, [0, 100], [0, 30], Extrapolation.CLAMP),
-    };
-  });
-
-  // Row Animation (Vertical Position)
-  const animatedRowStyle = useAnimatedStyle(() => {
-    // Top position: 0 to 24px (margin top or transform translateY)
-    const translateY = interpolate(activeScrollY.value, [0, 100], [0, 24], Extrapolation.CLAMP);
     return {
       transform: [{ translateY }],
     };
   });
 
+  // Desktop Pill Animation
+  const animatedDesktopPillStyle = useAnimatedStyle(() => {
+    const scrollValue = activeScrollY.value;
+    const widthPercentage = interpolate(scrollValue, [0, 100], [100, 70], Extrapolation.CLAMP);
+    const borderRadius = interpolate(scrollValue, [0, 100], [0, 100], Extrapolation.CLAMP);
+    const backgroundColor = interpolateColor(scrollValue, [0, 100], ['rgba(23, 23, 23, 0)', '#86EFAC']);
+    const shadowOpacity = interpolate(scrollValue, [0, 100], [0, 0.4], Extrapolation.CLAMP);
+
+    return {
+      width: `${widthPercentage}%`,
+      borderRadius,
+      backgroundColor,
+      shadowOpacity,
+      shadowRadius: 20,
+      shadowColor: '#86EFAC',
+    };
+  });
+
   return (
     <View style={styles.headerWrapper} pointerEvents="box-none">
-      <Animated.View style={[styles.floatingRow, animatedRowStyle]}>
-        <Animated.View style={[styles.pillContainerBase, animatedContainerStyle, { overflow: 'hidden', marginRight: 12 }]}>
-          
-          {/* Bubble Decorations */}
-          <BubbleDecoration scrollY={activeScrollY} />
-
-          {/* Content Container */}
-          <View style={styles.contentContainer}>
-            {/* Logo Section */}
-            <Pressable onPress={() => scrollToSection('hero')} style={styles.logoBtn}>
-              {siteInfo.logo ? (
-                <ExpoImage 
-                  source={siteInfo.logo} 
-                  style={{ width: 32, height: 32, borderRadius: 8 }} 
-                  contentFit="contain"
-                />
-              ) : (
-                <Text style={styles.logoIcon}>🥗</Text>
-              )}
-              {isDesktop && (
-                <AnimatedNavItemText 
-                  scrollY={activeScrollY} 
-                  label={siteInfo.name} 
-                  startColor={colors.text} 
-                  endColor="#000000" // Black text on Light Green background
-                  fontSize={18}
-                  fontWeight="800"
-                />
-              )}
-            </Pressable>
-            
-            {/* Navigation - Centered */}
-            {isDesktop && (
+      <Animated.View style={[styles.floatingRow, animatedHeaderStyle]}>
+        
+        {isDesktop ? (
+          /* ================= DESKTOP LAYOUT ================= */
+          <Animated.View style={[styles.pillContainerBase, animatedDesktopPillStyle, { marginRight: 12 }]}>
+            <View style={styles.contentContainer}>
+              {/* Logo */}
+              <Pressable onPress={() => scrollToSection('hero')} style={styles.logoBtn}>
+                <ExpoImage source={siteInfo.logo} style={styles.logoImage} contentFit="contain" />
+                <AnimatedNavItemText scrollY={activeScrollY} label={siteInfo.name} fontSize={18} fontWeight="800" />
+              </Pressable>
+              
+              {/* Nav */}
               <View style={styles.nav}>
-                {navItems.map((item) => (
-                  <Pressable
-                    key={item.id}
-                    onPress={() => scrollToSection(item.id)}
-                    style={({ pressed, hovered }) => [
-                      styles.navItem,
-                      Platform.OS === 'web' && hovered && {
-                        backgroundColor: 'rgba(0,0,0,0.05)',
-                      },
-                    ]}
-                  >
-                  <AnimatedNavItemText 
-                      scrollY={activeScrollY} 
-                      label={item.label} 
-                      startColor={colors.text} 
-                      endColor="#000000"
-                    />
-                  </Pressable>
+                {NAV_ITEMS.map((item) => (
+                   item.id !== 'hero' && ( // Skip Home in desktop nav list if desired, or keep it
+                    <Pressable key={item.id} onPress={() => scrollToSection(item.id)} style={styles.navItem}>
+                       <AnimatedNavItemText scrollY={activeScrollY} label={item.label} />
+                    </Pressable>
+                   )
                 ))}
               </View>
-            )}
+            </View>
+          </Animated.View>
+        ) : (
+          /* ================= MOBILE LAYOUT (The Exploding Pill) ================= */
+          <View style={[styles.mobilePillContainer, { marginRight: 8 }]}>
+            {NAV_ITEMS.map((item) => (
+              <MobileNavItem 
+                key={item.id}
+                item={item}
+                isActive={activeTab === item.id}
+                onPress={() => scrollToSection(item.id)}
+              />
+            ))}
           </View>
-        </Animated.View>
+        )}
 
-        {/* Separated Button */}
-        {/* Always Visible, Black Pill "Download" */}
-        <AnimatedButton
-            onPress={() => scrollToSection('hero')} 
-            label="Download"
+        {/* Download Button (Always Visible) */}
+        <AnimatedButton 
+          onPress={() => scrollToSection('hero')} 
+          label="Get App" 
+          showLabel={isDesktop}
         />
+
       </Animated.View>
     </View>
   );
 }
 
-// Bubble Decoration Component
-function BubbleDecoration({ scrollY }: { scrollY: SharedValue<number> }) {
-  const animatedStyle = useAnimatedStyle(() => {
+// ------------------------------------------------------------------
+// Mobile Nav Item Component (The Exploding Tab)
+// ------------------------------------------------------------------
+function MobileNavItem({ item, isActive, onPress }: { item: any; isActive: boolean; onPress: () => void }) {
+  // Shared value for animation state
+  const progress = useDerivedValue(() => {
+    return withTiming(isActive ? 1 : 0, { duration: 250 });
+  });
+
+  const animatedContainerStyle = useAnimatedStyle(() => {
     return {
-      opacity: interpolate(scrollY.value, [50, 100], [0, 1], Extrapolation.CLAMP),
+      backgroundColor: interpolateColor(progress.value, [0, 1], ['transparent', '#86EFAC']), // Transparent -> Green
+      flexGrow: interpolate(progress.value, [0, 1], [0, 1]), // Expand width
+      paddingHorizontal: interpolate(progress.value, [0, 1], [10, 16]),
     };
   });
 
-  return (
-    <Animated.View style={[StyleSheet.absoluteFill, animatedStyle]} pointerEvents="none">
-      <View style={[styles.bubble, { 
-        width: 100, height: 100, borderRadius: 50, 
-        backgroundColor: 'rgba(255,255,255,0.2)', 
-        top: -30, left: -20 
-      }]} />
-      <View style={[styles.bubble, { 
-        width: 60, height: 60, borderRadius: 30, 
-        backgroundColor: 'rgba(255,255,255,0.15)', 
-        bottom: -20, right: 40 
-      }]} />
-      <View style={[styles.bubble, { 
-        width: 150, height: 150, borderRadius: 75, 
-        backgroundColor: 'rgba(255,255,255,0.1)', 
-        top: '50%', left: '50%', transform: [{ translateX: -75 }, { translateY: -75 }]
-      }]} />
-    </Animated.View>
-  );
-}
-
-// Text color animator
-function AnimatedNavItemText({ 
-  scrollY, 
-  label, 
-  startColor, 
-  endColor, 
-  fontSize = 14, 
-  fontWeight = '500' 
-}: { 
-  scrollY: SharedValue<number>, 
-  label: string, 
-  startColor: string, 
-  endColor: string,
-  fontSize?: number,
-  fontWeight?: string | number
-}) {
-  const animatedStyle = useAnimatedStyle(() => {
+  const animatedTextStyle = useAnimatedStyle(() => {
     return {
-      color: interpolateColor(
-        scrollY.value,
-        [0, 100],
-        [startColor, endColor]
-      ),
+      opacity: progress.value,
+      transform: [
+        { translateX: interpolate(progress.value, [0, 1], [10, 0]) }, // Slide in
+        { scale: progress.value } 
+      ],
+      // Hide completely when inactive to prevent layout shift artifacts
+      width: isActive ? 'auto' : 0,
+      height: isActive ? 'auto' : 0,
     };
   });
 
-  return (
-    <Animated.Text style={[styles.navText, { fontSize, fontWeight: fontWeight as any }, animatedStyle]}>
-      {label}
-    </Animated.Text>
-  );
-}
+  const iconColor = useDerivedValue(() => {
+    return interpolateColor(progress.value, [0, 1], ['#aaaaaa', '#000000']); // Grey -> Black
+  });
 
-// Animated CTA Button
-function AnimatedButton({ onPress, label }: { onPress: () => void; label: string }) {
-  const scale = useSharedValue(1);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
+  const animatedIconStyle = useAnimatedStyle(() => ({
+    // color: iconColor.value // Color interpolation on Ionicons text needs specific handling or just use prop
   }));
-  
-  const handlePressIn = () => { scale.value = withTiming(0.95, { duration: 100 }); };
-  const handlePressOut = () => { scale.value = withTiming(1, { duration: 150 }); };
-  const handleHoverIn = () => { scale.value = withTiming(1.05, { duration: 200 }); };
-  const handleHoverOut = () => { scale.value = withTiming(1, { duration: 200 }); };
 
   return (
-    <Pressable
-      onPress={onPress}
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
-      {...(Platform.OS === 'web' && {
-        onHoverIn: handleHoverIn,
-        onHoverOut: handleHoverOut,
-      })}
-    >
-      <Animated.View
-        style={[
-          styles.ctaButton,
-          { 
-            backgroundColor: '#000000', // Always Black
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 8,
-          }, 
-          animatedStyle,
-        ]}
-      >
-        <Text style={styles.ctaText}>{label}</Text>
-        <Ionicons name="arrow-down-circle-outline" size={20} color="#FFFFFF" />
+    <Pressable onPress={onPress}>
+      <Animated.View style={[styles.mobileNavItem, animatedContainerStyle]}>
+        <View style={{ width: 24, height: 24, alignItems: 'center', justifyContent: 'center' }}>
+          <Ionicons 
+            name={isActive ? item.activeIcon : item.icon} 
+            size={20} 
+            color={isActive ? '#000000' : '#888888'} 
+          />
+        </View>
+        {isActive && (
+           <Animated.Text style={[styles.mobileNavText, animatedTextStyle]} numberOfLines={1}>
+             {item.label}
+           </Animated.Text>
+        )}
       </Animated.View>
     </Pressable>
   );
 }
 
+
+// ------------------------------------------------------------------
+// Helper Components (Reused/Simplified)
+// ------------------------------------------------------------------
+
+function AnimatedNavItemText({ scrollY, label, fontSize = 14, fontWeight = '500' }: any) {
+  const style = useAnimatedStyle(() => ({
+     color: interpolateColor(scrollY.value, [0, 100], [Colors.light.text, '#000000']),
+  }));
+  return <Animated.Text style={[styles.navText, { fontSize, fontWeight }, style]}>{label}</Animated.Text>;
+}
+
+function AnimatedButton({ onPress, label, showLabel = true }: { onPress: () => void; label: string; showLabel?: boolean }) {
+  const scale = useSharedValue(1);
+  return (
+    <Pressable onPress={onPress} onPressIn={() => scale.value=0.95} onPressOut={() => scale.value=1}>
+      <Animated.View style={[
+        styles.ctaButton, 
+        { 
+          transform: [{scale}],
+          paddingHorizontal: showLabel ? 20 : 0, 
+          width: showLabel ? 'auto' : 56, 
+          justifyContent: 'center',
+          gap: showLabel ? 8 : 0
+        }
+      ]}>
+         {showLabel && <Text style={styles.ctaText}>{label}</Text>}
+         <Ionicons name="arrow-down-circle" size={24} color="#FFF" />
+      </Animated.View>
+    </Pressable>
+  );
+}
+
+
 const styles = StyleSheet.create({
   headerWrapper: {
     position: 'fixed' as any,
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 100,
+    top: 0, left: 0, right: 0, zIndex: 100,
   },
   floatingRow: {
      flexDirection: 'row',
@@ -276,72 +230,73 @@ const styles = StyleSheet.create({
      width: '100%',
      maxWidth: 1200,
      marginHorizontal: 'auto',
+     paddingHorizontal: 16,
   },
+  
+  // Desktop Pill
   pillContainerBase: {
+    height: 60,
     justifyContent: 'center',
-    alignItems: 'stretch',
-    padding: 0,
-    // Base minWidth for when it's compact
-    minWidth: 200, 
-    ...(Platform.OS === 'web' && {
-      backdropFilter: 'blur(20px)',
-      WebkitBackdropFilter: 'blur(20px)',
-    }),
+    overflow: 'hidden',
+    ...(Platform.OS === 'web' && { backdropFilter: 'blur(20px)' }),
   },
   contentContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    width: '100%',
-    paddingVertical: 12,
     paddingHorizontal: 24,
+    width: '100%',
   },
-  bubble: {
-    position: 'absolute',
-  },
-  logoBtn: {
+  nav: { flexDirection: 'row', gap: 16 },
+  navItem: { paddingVertical: 8, paddingHorizontal: 12 },
+  
+  // Mobile Pill
+  mobilePillContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-  },
-  logoIcon: {
-    fontSize: 24,
-  },
-  logoText: {
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  nav: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  navItem: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-    ...(Platform.OS === 'web' && {
-      transition: 'all 0.2s ease',
-    } as any),
-  },
-  navText: {
-    fontSize: 14,
-    fontWeight: '500',
-    opacity: 0.9,
-  },
-  ctaButton: {
-    height: 48,
-    justifyContent: 'center',
-    paddingHorizontal: 24,
+    backgroundColor: '#1a1a1a', // Dark pill background
     borderRadius: 100,
+    padding: 6,
+    height: 56, // Fixed height for mobile nav
+    gap: 4,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 8,
+  },
+  mobileNavItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 44,
+    borderRadius: 22,
+    gap: 6,
+    // overflow: 'hidden', // Mask text when expanding
+  },
+  mobileNavText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#000000',
+  },
+
+  // Common
+  logoBtn: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  logoImage: { width: 32, height: 32, borderRadius: 8 },
+  navText: { fontSize: 14 },
+  
+  // CTA
+  ctaButton: {
+    height: 56, // Match mobile pill height for symmetry
+    backgroundColor: '#000',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    borderRadius: 100,
+    gap: 8,
+    shadowColor: '#000',
     shadowOpacity: 0.2,
     shadowRadius: 8,
     elevation: 5,
   },
-  ctaText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '600',
-  },
+  ctaText: { color: '#FFF', fontWeight: '600', fontSize: 14 },
 });

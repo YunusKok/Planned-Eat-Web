@@ -29,7 +29,13 @@ export function MediaGallerySection() {
   return (
     <View
       id="media"
-      style={[styles.section, { backgroundColor: colors.surface }]}
+      style={[
+        styles.section, 
+        { 
+          backgroundColor: colors.surface,
+          paddingVertical: isDesktop ? 100 : 60, // Reduce padding on mobile
+        }
+      ]}
     >
       <View style={styles.container}>
         {/* Section Header */}
@@ -38,10 +44,10 @@ export function MediaGallerySection() {
             <Text style={[styles.badge, { backgroundColor: colors.cardBg, color: colors.primary }]}>
               📱 The App
             </Text>
-            <Text style={[styles.title, { color: colors.text }]}>
+            <Text style={[styles.title, { color: colors.text, fontSize: isDesktop ? 44 : 32 }]}>
               {mediaGallery.sectionTitle}
             </Text>
-            <Text style={[styles.subtitle, { color: colors.muted }]}>
+            <Text style={[styles.subtitle, { color: colors.muted, fontSize: isDesktop ? 18 : 16 }]}>
               Explore the features Planned-Eat offers up close.
             </Text>
           </View>
@@ -79,9 +85,13 @@ export function MediaGallerySection() {
             </Text>
             
             <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.galleryScroll}
+              horizontal={isDesktop}
+              showsHorizontalScrollIndicator={isDesktop}
+              showsVerticalScrollIndicator={!isDesktop}
+              contentContainerStyle={[
+                styles.galleryScroll,
+                !isDesktop && { flexDirection: 'column', alignItems: 'center', gap: 60 }
+              ]}
             >
               {mediaGallery.screenshots.map((screenshot, index) => (
                 <ScreenshotCard
