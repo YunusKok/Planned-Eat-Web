@@ -287,6 +287,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     marginBottom: 24,
     overflow: 'hidden',
+    alignSelf: 'center',
   },
   title: {
     fontSize: 52,
