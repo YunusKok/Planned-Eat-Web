@@ -1,7 +1,7 @@
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React from 'react';
+import { FaApple, FaGooglePlay } from 'react-icons/fa';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, {
     useAnimatedStyle,
@@ -86,11 +86,11 @@ export function StoreButton({ type, url }: StoreButtonProps) {
         ]}
       >
         <View style={styles.content}>
-          <MaterialCommunityIcons 
-            name={isApple ? "apple" : "google-play"} 
-            size={30} 
-            color={textColor} 
-          />
+          {isApple ? (
+            <FaApple size={30} color={textColor} />
+          ) : (
+            <FaGooglePlay size={26} color={textColor} />
+          )}
           <View style={styles.textContainer}>
             <Text style={[styles.subtitle, { color: textColor }]}>
               {isApple ? "Download on the" : "GET IT ON"}

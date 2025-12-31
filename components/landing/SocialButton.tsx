@@ -1,7 +1,7 @@
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React from 'react';
+import { FaGithub, FaLinkedin } from 'react-icons/fa';
 import { Linking, Platform, Pressable, StyleSheet } from 'react-native';
 import Animated, {
     useAnimatedStyle,
@@ -77,9 +77,9 @@ export function SocialButton({ type, url }: SocialButtonProps) {
         ]}
       >
         {isLinkedIn ? (
-           <MaterialCommunityIcons name="linkedin" size={24} color={iconColor} />
+           <FaLinkedin size={24} color={iconColor} />
         ) : (
-           <MaterialCommunityIcons name="github" size={24} color={iconColor} />
+           <FaGithub size={24} color={iconColor} />
         )}
       </Animated.View>
     </Pressable>
