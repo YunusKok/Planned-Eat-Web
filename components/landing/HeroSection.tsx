@@ -5,16 +5,16 @@ import { Image } from 'expo-image';
 import React, { useEffect } from 'react';
 import { Platform, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import Animated, {
-    Easing,
-    interpolate,
-    SharedValue,
-    useAnimatedStyle,
-    useSharedValue,
-    withDelay,
-    withRepeat,
-    withSequence,
-    withSpring,
-    withTiming,
+  Easing,
+  interpolate,
+  SharedValue,
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withRepeat,
+  withSequence,
+  withSpring,
+  withTiming,
 } from 'react-native-reanimated';
 import { StoreButton } from './StoreButton';
 
@@ -190,8 +190,13 @@ export function HeroSection({ scrollY }: HeroSectionProps) {
             </View>
             <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
             <View style={styles.statItem}>
-              <Text style={[styles.statNumber, { color: colors.primary }]}>500+</Text>
-              <Text style={[styles.statLabel, { color: colors.muted }]}>Recipes</Text>
+              <Text style={[styles.statNumber, { color: colors.primary }]}>360K+</Text>
+              <Text style={[styles.statLabel, { color: colors.muted, textAlign: 'center' }]}>Spoonacular Recipes</Text>
+            </View>
+            <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
+            <View style={styles.statItem}>
+              <Text style={[styles.statNumber, { color: colors.primary }]}>Unlimited</Text>
+              <Text style={[styles.statLabel, { color: colors.muted, textAlign: 'center' }]}>AI Recipes</Text>
             </View>
             <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
             <View style={styles.statItem}>
@@ -302,6 +307,7 @@ const styles = StyleSheet.create({
     gap: 16,
     marginBottom: 40,
     justifyContent: 'center',
+    width: '100%',
   },
   stats: {
     flexDirection: 'row',

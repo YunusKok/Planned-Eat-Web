@@ -3,11 +3,11 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import React from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, {
-    Easing,
-    useAnimatedStyle,
-    useSharedValue,
-    withSpring,
-    withTiming,
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
 } from 'react-native-reanimated';
 
 interface FeatureCardProps {
@@ -26,6 +26,8 @@ const iconMap: Record<string, string> = {
   'clock': '⏰',
   'star': '⭐',
   'bolt': '⚡',
+  'camera': '📸',
+  'bell': '🔔',
 };
 
 export function FeatureCard({ icon, title, description, index }: FeatureCardProps) {

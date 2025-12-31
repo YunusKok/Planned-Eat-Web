@@ -1,7 +1,8 @@
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { Linking, Platform, Pressable, StyleSheet, Text } from 'react-native';
+import { Linking, Platform, Pressable, StyleSheet } from 'react-native';
 import Animated, {
     useAnimatedStyle,
     useSharedValue,
@@ -75,9 +76,11 @@ export function SocialButton({ type, url }: SocialButtonProps) {
           animatedStyle,
         ]}
       >
-        <Text style={[styles.icon, { color: iconColor }]}>
-          {isLinkedIn ? 'in' : '⟨⟩'}
-        </Text>
+        {isLinkedIn ? (
+           <Ionicons name="logo-linkedin" size={24} color={iconColor} />
+        ) : (
+           <Ionicons name="logo-github" size={24} color={iconColor} />
+        )}
       </Animated.View>
     </Pressable>
   );
@@ -99,8 +102,5 @@ const styles = StyleSheet.create({
       cursor: 'pointer',
     }),
   },
-  icon: {
-    fontSize: 18,
-    fontWeight: '700',
-  },
+
 });

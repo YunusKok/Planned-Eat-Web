@@ -1,16 +1,18 @@
 import { siteInfo } from '@/constants/data';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { Ionicons } from '@expo/vector-icons';
+import { Image as ExpoImage } from 'expo-image';
 import React from 'react';
 import { Platform, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import Animated, {
-    Extrapolation,
-    SharedValue,
-    interpolate,
-    interpolateColor,
-    useAnimatedStyle,
-    useSharedValue,
-    withTiming
+  Extrapolation,
+  SharedValue,
+  interpolate,
+  interpolateColor,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming
 } from 'react-native-reanimated';
 
 interface HeaderProps {
@@ -95,15 +97,23 @@ export function Header({ scrollY }: HeaderProps) {
           <View style={styles.contentContainer}>
             {/* Logo Section */}
             <Pressable onPress={() => scrollToSection('hero')} style={styles.logoBtn}>
-              <Text style={styles.logoIcon}>🥗</Text>
+              {siteInfo.logo ? (
+                <ExpoImage 
+                  source={siteInfo.logo} 
+                  style={{ width: 32, height: 32, borderRadius: 8 }} 
+                  contentFit="contain"
+                />
+              ) : (
+                <Text style={styles.logoIcon}>🥗</Text>
+              )}
               {isDesktop && (
                 <AnimatedNavItemText 
                   scrollY={activeScrollY} 
                   label={siteInfo.name} 
                   startColor={colors.text} 
                   endColor="#000000" // Black text on Light Green background
-                  fontSize={16}
-                  fontWeight="700"
+                  fontSize={18}
+                  fontWeight="800"
                 />
               )}
             </Pressable>
@@ -236,11 +246,15 @@ function AnimatedButton({ onPress, label }: { onPress: () => void; label: string
           styles.ctaButton,
           { 
             backgroundColor: '#000000', // Always Black
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 8,
           }, 
           animatedStyle,
         ]}
       >
         <Text style={styles.ctaText}>{label}</Text>
+        <Ionicons name="arrow-down-circle-outline" size={20} color="#FFFFFF" />
       </Animated.View>
     </Pressable>
   );
@@ -279,7 +293,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     width: '100%',
-    paddingVertical: 10,
+    paddingVertical: 12,
     paddingHorizontal: 24,
   },
   bubble: {
@@ -315,7 +329,8 @@ const styles = StyleSheet.create({
     opacity: 0.9,
   },
   ctaButton: {
-    paddingVertical: 12,
+    height: 48,
+    justifyContent: 'center',
     paddingHorizontal: 24,
     borderRadius: 100,
     shadowColor: '#000',

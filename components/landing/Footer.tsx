@@ -1,6 +1,7 @@
 import { footerContent, siteInfo } from '@/constants/data';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { Image as ExpoImage } from 'expo-image';
 import React from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -20,9 +21,16 @@ export function Footer() {
         {/* Logo & Tagline */}
         <View style={styles.logoSection}>
           <Pressable onPress={scrollToTop}>
-            <Text style={[styles.logo, { color: colors.primary }]}>
-              🥗 {siteInfo.name}
-            </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, justifyContent: 'center', marginBottom: 8 }}>
+              <ExpoImage 
+                source={siteInfo.logo} 
+                style={{ width: 40, height: 40, borderRadius: 10 }} 
+                contentFit="contain"
+              />
+              <Text style={[styles.logo, { color: colors.primary, marginBottom: 0 }]}>
+                {siteInfo.name}
+              </Text>
+            </View>
           </Pressable>
           <Text style={[styles.tagline, { color: colors.muted }]}>
             {footerContent.tagline}
