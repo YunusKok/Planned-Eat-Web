@@ -2,13 +2,17 @@ import { mediaGallery } from '@/constants/data';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Image } from 'expo-image';
-import React from 'react';
-import { Platform, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import React, { useState } from 'react';
+import { Modal, Platform, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import Animated, {
-    Easing,
-    useAnimatedStyle,
-    useSharedValue,
-    withTiming
+  Easing,
+  FadeIn,
+  FadeOut,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+  ZoomIn,
+  ZoomOut
 } from 'react-native-reanimated';
 import { ScrollReveal } from './ScrollReveal';
 
@@ -17,6 +21,10 @@ export function MediaGallerySection() {
   const colors = Colors[colorScheme];
   const { width } = useWindowDimensions();
   const isDesktop = width >= 768;
+
+  const [selectedScreen, setSelectedScreen] = useState<{ image: any; alt: string; description?: string } | null>(null);
+
+  const closeModal = () => setSelectedScreen(null);
 
   return (
     <View
@@ -78,36 +86,146 @@ export function MediaGallerySection() {
               {mediaGallery.screenshots.map((screenshot, index) => (
                 <ScreenshotCard
                   key={screenshot.id}
-                  url={screenshot.url}
+                  image={screenshot.image}
                   alt={screenshot.alt}
+                  description={screenshot.description}
                   colors={colors}
                   delay={index * 100}
+                  onPress={() => setSelectedScreen(screenshot)}
                 />
               ))}
             </ScrollView>
           </View>
         </ScrollReveal>
+
+        {/* Detail Modal */}
+        <Modal
+          visible={!!selectedScreen}
+          transparent
+          animationType="none"
+          onRequestClose={closeModal}
+        >
+          {selectedScreen && (
+            <Pressable style={styles.modalOverlay} onPress={closeModal}>
+                <Animated.View 
+                    entering={FadeIn.duration(300)} 
+                    exiting={FadeOut.duration(200)}
+                    style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(20px)' } as any]} 
+                />
+                
+                <Animated.View 
+                    entering={ZoomIn.duration(400).easing(Easing.out(Easing.back(1.5)))}
+                    exiting={ZoomOut.duration(200)}
+                    style={[
+                        styles.modalContent, 
+                        isDesktop ? styles.modalContentDesktop : styles.modalContentMobile,
+                    ]}
+                >
+                    <Pressable style={styles.modalInner} onPress={(e) => e.stopPropagation()}>
+                         {isDesktop ? (
+                            <View style={styles.modalContentWrapper}>
+                                <View style={styles.modalImageWrapperDesktop}>
+                                    <PhoneFrame>
+                                        <Image
+                                            source={selectedScreen.image}
+                                            style={{ width: '100%', height: '100%' }}
+                                            contentFit="cover"
+                                        />
+                                    </PhoneFrame>
+                                </View>
+                                
+                                <View style={styles.modalTextContainer}>
+                                    <Text style={[styles.modalTitle, { color: '#fff' }]}>{selectedScreen.alt}</Text>
+                                    <Text style={[styles.modalDescription, { color: 'rgba(255,255,255,0.8)' }]}>
+                                        {selectedScreen.description}
+                                    </Text>
+                                    <Pressable 
+                                        onPress={closeModal}
+                                        style={({pressed}) => [
+                                            styles.closeButton, 
+                                            { backgroundColor: colors.primary, opacity: pressed ? 0.9 : 1 }
+                                        ]}
+                                    >
+                                        <Text style={styles.closeButtonText}>Close</Text>
+                                    </Pressable>
+                                </View>
+                            </View>
+                         ) : (
+                            <ScrollView 
+                                style={{ flex: 1, width: '100%' }}
+                                contentContainerStyle={{ paddingBottom: 40, alignItems: 'center' }}
+                            >
+                                <View style={styles.modalImageWrapperMobile}>
+                                    <PhoneFrame style={{ transform: [{ scale: 0.8 }] }}>
+                                        <Image
+                                            source={selectedScreen.image}
+                                            style={{ width: '100%', height: '100%' }}
+                                            contentFit="cover"
+                                        />
+                                    </PhoneFrame>
+                                </View>
+                                
+                                <View style={styles.modalTextContainerMobile}>
+                                    <Text style={[styles.modalTitleMobile, { color: '#fff' }]}>{selectedScreen.alt}</Text>
+                                    <Text style={[styles.modalDescriptionMobile, { color: 'rgba(255,255,255,0.8)' }]}>
+                                        {selectedScreen.description}
+                                    </Text>
+                                    <Pressable 
+                                        onPress={closeModal}
+                                        style={({pressed}) => [
+                                            styles.closeButton, 
+                                            { backgroundColor: colors.primary, opacity: pressed ? 0.9 : 1, alignSelf: 'center' }
+                                        ]}
+                                    >
+                                        <Text style={styles.closeButtonText}>Close</Text>
+                                    </Pressable>
+                                </View>
+                            </ScrollView>
+                         )}
+                    </Pressable>
+                </Animated.View>
+            </Pressable>
+          )}
+        </Modal>
       </View>
     </View>
   );
 }
 
 // Screenshot card with hover effect
-function ScreenshotCard({ url, alt, colors, delay }: { url: string; alt: string; colors: any; delay: number }) {
+// Reusable Phone Frame Component
+function PhoneFrame({ children, style }: { children: React.ReactNode; style?: any }) {
+  return (
+    <View style={[styles.phoneFrame, style]}>
+      {/* Side Buttons */}
+      <View style={[styles.sideButton, styles.silentSwitch]} />
+      <View style={[styles.sideButton, styles.volumeUp]} />
+      <View style={[styles.sideButton, styles.volumeDown]} />
+      <View style={[styles.sideButton, styles.powerButton]} />
+      
+      <View style={styles.phoneScreen}>
+        {children}
+      </View>
+    </View>
+  );
+}
+
+// Screenshot card with hover effect
+function ScreenshotCard({ image, alt, description, colors, delay, onPress }: { image: any; alt: string; description?: string; colors: any; delay: number; onPress: () => void }) {
   const translateY = useSharedValue(0);
   const scale = useSharedValue(1);
   const shadowOpacity = useSharedValue(0.08);
 
   const handleHoverIn = () => {
-    translateY.value = withTiming(-4, { duration: 250, easing: Easing.out(Easing.ease) });
-    scale.value = withTiming(1.01, { duration: 250, easing: Easing.out(Easing.ease) });
-    shadowOpacity.value = withTiming(0.2, { duration: 250 });
+    translateY.value = withTiming(-12, { duration: 300, easing: Easing.out(Easing.ease) });
+    scale.value = withTiming(1.05, { duration: 300, easing: Easing.out(Easing.ease) });
+    shadowOpacity.value = withTiming(0.25, { duration: 300 });
   };
 
   const handleHoverOut = () => {
-    translateY.value = withTiming(0, { duration: 250, easing: Easing.out(Easing.ease) });
-    scale.value = withTiming(1, { duration: 250, easing: Easing.out(Easing.ease) });
-    shadowOpacity.value = withTiming(0.08, { duration: 250 });
+    translateY.value = withTiming(0, { duration: 300, easing: Easing.out(Easing.ease) });
+    scale.value = withTiming(1, { duration: 300, easing: Easing.out(Easing.ease) });
+    shadowOpacity.value = withTiming(0.08, { duration: 300 });
   };
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -120,6 +238,7 @@ function ScreenshotCard({ url, alt, colors, delay }: { url: string; alt: string;
 
   return (
     <Pressable
+      onPress={onPress}
       {...(Platform.OS === 'web' && {
         onHoverIn: handleHoverIn,
         onHoverOut: handleHoverOut,
@@ -127,23 +246,23 @@ function ScreenshotCard({ url, alt, colors, delay }: { url: string; alt: string;
     >
       <Animated.View
         style={[
-          styles.screenshotContainer,
-          {
-            backgroundColor: colors.cardBg,
-            borderColor: colors.border,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 8 },
-            shadowRadius: 20,
-            elevation: 8,
-          },
+          styles.screenshotWrapper, // Renamed from screenshotContainer to avoid confusion
           animatedStyle,
         ]}
       >
-        <Image
-          source={{ uri: url }}
-          style={styles.screenshot}
-          contentFit="cover"
-        />
+        <PhoneFrame>
+            <Image
+            source={image}
+            style={styles.screenshot}
+            contentFit="cover"
+            />
+             <View style={styles.cardOverlay}>
+                 <View style={styles.tapBadge}>
+                     <Text style={styles.overlayText}>Tap</Text>
+                 </View>
+            </View>
+        </PhoneFrame>
+        
         <Text style={[styles.screenshotLabel, { color: colors.muted }]}>
           {alt}
         </Text>
@@ -219,29 +338,181 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   galleryScroll: {
-    paddingVertical: 16,
-    paddingHorizontal: 8,
-    gap: 24,
+    paddingVertical: 40, // Increased to Prevent clipping on hover (scale + translate)
+    paddingHorizontal: 16,
+    gap: 48,
     flexGrow: 1,
-    justifyContent: 'center', // Center items if they don't overflow
+    justifyContent: 'center',
+    paddingBottom: 40,
+    overflow: 'visible', // Ensure shadows/transforms don't get clipped
   },
-  screenshotContainer: {
-    borderRadius: 24,
-    borderWidth: 1,
-    padding: 12,
-    ...(Platform.OS === 'web' && {
-      cursor: 'pointer',
-    }),
+  screenshotWrapper: {
+    alignItems: 'center',
+  },
+  // Phone Frame Styles
+  phoneFrame: {
+    width: 230,
+    height: 480,
+    backgroundColor: '#1a1a1a', // Dark bezel
+    borderRadius: 45,
+    borderWidth: 6,
+    borderColor: '#4a4a4a', // Metallic frame border
+    position: 'relative',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 12 }, // Reduced offset
+    shadowOpacity: 0.15, // Much softer shadow
+    shadowRadius: 30,
+    elevation: 15,
+    overflow: 'visible', // Allow buttons to stick out
+  },
+  phoneScreen: {
+    flex: 1,
+    backgroundColor: '#000',
+    borderRadius: 38,
+    overflow: 'hidden',
+    width: '100%',
+    height: '100%',
+  },
+  sideButton: {
+    position: 'absolute',
+    backgroundColor: '#3a3a3a',
+    width: 3,
+    borderTopLeftRadius: 2,
+    borderBottomLeftRadius: 2,
+  },
+  silentSwitch: { top: 70, left: -7, height: 20 },
+  volumeUp: { top: 110, left: -7, height: 40 },
+  volumeDown: { top: 160, left: -7, height: 40 },
+  powerButton: { top: 130, right: -7, height: 65, width: 3, borderTopRightRadius: 2, borderBottomRightRadius: 2, borderTopLeftRadius: 0, borderBottomLeftRadius: 0 },
+  
+  cardOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.1)', // Subtle tint
+  },
+  tapBadge: {
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    opacity: 0, // Hidden by default
+    transform: [{ scale: 0.8 }],
+  },
+  overlayText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#000',
   },
   screenshot: {
-    width: 220,
-    height: 440,
-    borderRadius: 16,
+    width: '100%',
+    height: '100%',
   },
   screenshotLabel: {
     textAlign: 'center',
-    marginTop: 16,
-    fontSize: 15,
+    marginTop: 24,
+    fontSize: 18,
     fontWeight: '600',
+  },
+  // Modal Styles
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    borderRadius: 32,
+    overflow: 'hidden',
+    // Removed native shadow/border in favor of clean look
+  },
+  modalContentDesktop: {
+    flexDirection: 'row',
+    width: '85%',
+    maxWidth: 1100,
+    height: '85%',
+    backgroundColor: 'transparent', // Transparent to let phone stand out
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 0,
+    boxShadow: 'none',
+  },
+  modalContentMobile: {
+    width: '95%',
+    height: '90%',
+    backgroundColor: 'rgba(20, 20, 20, 0.95)',
+    borderWidth: 1,
+    borderColor: '#333',
+  },
+  modalInner: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
+  modalContentWrapper: {
+    flexDirection: 'row',
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+  },
+  modalImageWrapperDesktop: {
+    flex: 1,
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+    transform: [{ scale: 0.9 }], 
+  },
+  modalImageWrapperMobile: {
+    width: '100%',
+    height: 420,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 40,
+    marginBottom: -40, // Pull text closer since scale creates gaps
+  },
+  modalTextContainer: {
+    flex: 1,
+    padding: 40,
+    justifyContent: 'center',
+    maxWidth: 500,
+  },
+  modalTextContainerMobile: {
+    padding: 24,
+    width: '100%',
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 42,
+    fontWeight: '800',
+    marginBottom: 24,
+  },
+  modalTitleMobile: {
+    fontSize: 32,
+    fontWeight: '800',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  modalDescription: {
+    fontSize: 20,
+    lineHeight: 32,
+    marginBottom: 40,
+  },
+  modalDescriptionMobile: {
+    fontSize: 16,
+    lineHeight: 24,
+    marginBottom: 32,
+    textAlign: 'center',
+  },
+  closeButton: {
+    paddingVertical: 16,
+    paddingHorizontal: 40,
+    borderRadius: 100,
+    alignSelf: 'flex-start',
+  },
+  closeButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '700',
   },
 });

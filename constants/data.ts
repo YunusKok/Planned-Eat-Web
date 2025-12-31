@@ -49,26 +49,29 @@ export const features = [
 export const mediaGallery = {
   sectionTitle: "Discover the App",
   promoVideoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+  // Main showcase images (Empty -> Filled transition)
+  showcaseImages: {
+    empty: require('@/assets/images/screenshot-home-empty.png'),
+    filled: require('@/assets/images/screenshot-home-filled.png'),
+  },
   screenshots: [
     {
       id: "1",
-      url: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&q=80",
-      alt: "Home Page",
+      image: require('@/assets/images/screenshot-home-empty.png'),
+      alt: "Plan Your Day",
+      description: "Start your day by creating a personalized meal plan. Our AI suggests recipes based on your preferences and nutritional goals.",
     },
     {
       id: "2",
-      url: "https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=400&q=80",
-      alt: "Recipes",
+      image: require('@/assets/images/screenshot-home-filled.png'),
+      alt: "Daily Overview",
+      description: "Track your calories, macros, and meals in one place. Get a clear view of your daily nutrition throughout the day.",
     },
     {
       id: "3",
-      url: "https://images.unsplash.com/photo-1494390248081-4e521a5940db?w=400&q=80",
-      alt: "Calorie Tracking",
-    },
-    {
-      id: "4",
-      url: "https://images.unsplash.com/photo-1547592180-85f173990554?w=400&q=80",
-      alt: "Shopping List",
+      image: require('@/assets/images/screenshot-meal-plan.png'),
+      alt: "Meal Plan Preview",
+      description: "Get a detailed preview of your upcoming meals. Swap out recipes you don't like and save your perfect plan.",
     },
   ],
 };
