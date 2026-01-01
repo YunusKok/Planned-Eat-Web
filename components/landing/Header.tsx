@@ -266,10 +266,11 @@ export function Header({ scrollY }: HeaderProps) {
                       style={[
                         styles.navText, 
                         { 
-                          fontSize: 18, // Increase font size slightly
+                          fontSize: 18, 
                           fontWeight: '800', 
                           color: colorScheme === 'dark' ? '#FFF' : '#000',
-                          display: width < 400 ? 'none' : 'flex' // Hide name on smaller screens to make room for large content
+                          // Only hide on extremely small devices
+                          display: width < 300 ? 'none' : 'flex' 
                         }
                       ]}
                       numberOfLines={1}

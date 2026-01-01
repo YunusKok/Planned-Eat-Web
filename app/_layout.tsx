@@ -13,6 +13,8 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
+import { Colors } from '@/constants/theme';
+
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [showLoading, setShowLoading] = React.useState(true);
@@ -24,6 +26,12 @@ export default function RootLayout() {
     }, 2500);
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      document.body.style.backgroundColor = colorScheme === 'dark' ? Colors.dark.background : Colors.light.background;
+    }
+  }, [colorScheme]);
   const [loaded] = useFonts({
     Ionicons: Platform.OS === 'web' 
       ? new URL('/Planned-Eat-Web/fonts/Ionicons.ttf', 'https://senior-project-2026.github.io').toString()
