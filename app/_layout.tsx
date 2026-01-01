@@ -30,6 +30,15 @@ export default function RootLayout() {
   useEffect(() => {
     if (Platform.OS === 'web') {
       document.body.style.backgroundColor = colorScheme === 'dark' ? Colors.dark.background : Colors.light.background;
+      
+      // Android Chrome address bar fix
+      document.documentElement.style.height = '100%';
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.height = '100%';
+      document.body.style.overflow = 'auto';
+      document.body.style.overscrollBehavior = 'none';
+      // @ts-ignore
+      document.body.style.webkitOverflowScrolling = 'touch';
     }
   }, [colorScheme]);
   const [loaded] = useFonts({

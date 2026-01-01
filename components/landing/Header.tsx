@@ -406,9 +406,11 @@ const styles = StyleSheet.create({
     left: 0, right: 0, zIndex: 100,
     // Android Chrome fix: prevents jumping when address bar hides/shows
     ...(Platform.OS === 'web' && {
-      transform: 'translateZ(0)',
+      transform: 'translate3d(0, 0, 0)',
       backfaceVisibility: 'hidden',
-      willChange: 'transform',
+      WebkitBackfaceVisibility: 'hidden',
+      contain: 'layout style',
+      overscrollBehavior: 'none',
     }),
   },
   floatingRow: {
