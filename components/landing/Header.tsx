@@ -156,7 +156,7 @@ export function Header({ scrollY }: HeaderProps) {
   const animatedDesktopPillStyle = useAnimatedStyle(() => {
     const scrollValue = activeScrollY.value;
     const widthPercentage = interpolate(scrollValue, [0, 100], [100, 70], Extrapolation.CLAMP);
-    const borderRadius = interpolate(scrollValue, [0, 100], [0, 100], Extrapolation.CLAMP);
+    const borderRadius = 100; // Always rounded like Get App button
     const backgroundColor = interpolateColor(scrollValue, [0, 100], ['rgba(23, 23, 23, 0)', '#86EFAC']);
     const shadowOpacity = interpolate(scrollValue, [0, 100], [0, 0.4], Extrapolation.CLAMP);
 
@@ -390,9 +390,9 @@ function AnimatedButton({ onPress, label, showLabel = true, fixedSize }: Animate
           gap: showLabel ? 8 : 0
         }
       ]}>
-         {showLabel && <Text style={styles.ctaText}>{label}</Text>}
+         {showLabel && <Text style={[styles.ctaText, { color: '#000' }]}>{label}</Text>}
          <View style={{ transform: [{ scale: iconScale }] }}>
-            <MdFileDownload size={24} color="#FFF" />
+            <MdFileDownload size={24} color="#000" />
          </View>
       </Animated.View>
     </Pressable>
@@ -486,7 +486,7 @@ const styles = StyleSheet.create({
   // CTA
   ctaButton: {
     height: 56, // Match mobile pill height for symmetry
-    backgroundColor: '#000',
+    backgroundColor: '#86EFAC',
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
